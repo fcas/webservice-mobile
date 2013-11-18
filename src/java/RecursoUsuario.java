@@ -2,12 +2,16 @@
 import dao.DAOUsuario;
 import excecoes.DadosIncompletosException;
 import excecoes.UsuarioJaExisteException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import model.Usuario;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 
 
 
@@ -25,14 +29,26 @@ public class RecursoUsuario {
    @Produces(MediaType.TEXT_PLAIN)
    @Path("getAll")  
    public String getAll() {   
+              
+        JSONArray jsonarr = new JSONArray();
+
+        
+
        dao = DAOUsuario.getInstance();
        Usuario usuario;
        StringBuilder string = new StringBuilder();
        List<Usuario> result = dao.getAllUsers();
-       
+       if(result != null)
        for(int i = 0; i < result.size(); i++){
            usuario =  result.get(i);
-           string.append(usuario.getLogin());
+           Map<String, String> map = new HashMap<String, String>();
+            map.put("login", usuario.getLogin());
+            map.put("senha", usuario.getSenha());
+            map.put("nome", usuario.getNome());
+            map.put("curso", usuario.getCurso());
+            map.put("sobre", usuario.getSobreMim());
+            jsonarr.put(map);
+           /*string.append(string);
            string.append("--");
            string.append(usuario.getSenha());
            string.append("--");
@@ -41,21 +57,20 @@ public class RecursoUsuario {
            string.append(usuario.getCurso());
            string.append("--");
            string.append(usuario.getSobreMim());    
-           string.append(System.getProperty("line.separator"));
+           string.append(System.getProperty("line.separator"));*/
        }
-       dao.close();
-       return string.toString();
+       //dao.close();
+       return jsonarr.toString();
     }  
    
    @GET  
-   @Produces(MediaType.APPLICATION_XML)
+   @Produces(MediaType.APPLICATION_JSON)
    @Path("getAll2")  
    public List<Usuario> getAll2() {   
        dao = DAOUsuario.getInstance();
        Usuario usuario;
        StringBuilder string = new StringBuilder();
        List<Usuario> lista = dao.getAllUsers();
-       dao.close();
        return lista;
     }  
    

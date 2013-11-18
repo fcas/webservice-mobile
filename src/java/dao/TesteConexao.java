@@ -38,7 +38,7 @@ public class TesteConexao{
         
         DAOUsuario dao = DAOUsuario.getInstance();
         System.out.println(dao.getAllUsers().get(1).getSobreMim());
-        DAOLugar daoL = DAOLugar.getInstance();
+        /*DAOLugar daoL = DAOLugar.getInstance();
         Lugar l = new Lugar();
         l.setLocalizacao("LOOOOOOL");
         l.setNome("Biblioteca");
@@ -74,6 +74,6 @@ public class TesteConexao{
         daoC.updateComentario(c);
         daoL.close();
         daoT.close();
-        daoC.close();
+        daoC.close();*/
      }
 }
