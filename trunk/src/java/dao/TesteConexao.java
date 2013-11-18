@@ -36,7 +36,7 @@ public class TesteConexao{
          dao.close();*/
         
         
-        DAOUsuario dao = DAOUsuario.getInstance();
+        DAOUsuario dao = new DAOUsuario();
         System.out.println(dao.getAllUsers().get(1).getSobreMim());
         /*DAOLugar daoL = DAOLugar.getInstance();
         Lugar l = new Lugar();

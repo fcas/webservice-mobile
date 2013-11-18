@@ -17,17 +17,10 @@ public class DAOUsuario {
 	  private String[] allColumns = { Usuario.COLUNA_LOGIN, Usuario.COLUNA_SENHA,
 			  Usuario.COLUNA_NOME , Usuario.COLUNA_CURSO, Usuario.COLUNA_SOBRE};
 	  @SuppressWarnings("unused")
-	  private DAOUsuario() {
-	      conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
-	  }
-               
-          public static DAOUsuario getInstance(){
-            if(instance == null){
-                instance = new DAOUsuario();
-            }
-            return instance;
-          }
 
+          public void open(){
+              conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
+          }
          public List<Usuario> getAllUsers() {
             List<Usuario> usuarios = new ArrayList<Usuario>();
             ResultSet rs;
@@ -183,11 +176,7 @@ public class DAOUsuario {
 	  }
           
           public void close(){
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(DAOUsuario.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    ConnectionFactory.closeConnection();
           }
 
 }

@@ -22,22 +22,15 @@ import model.Usuario;
  */
 public class DAOComentario {
     
-              Connection conn;  
-              DAOLugar daoLugar;
+          static Connection conn;  
+          DAOLugar daoLugar;
 	  private static DAOComentario instance;
 	  @SuppressWarnings("unused")
-	  private DAOComentario() {
-              daoLugar = DAOLugar.getInstance();
+	  public DAOComentario() {
+              daoLugar = new DAOLugar();
 	      conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
 	  }
-               
-          public static DAOComentario getInstance(){
-            if(instance == null){
-                instance = new DAOComentario();
-            }
-            return instance;
-          }
-              
+                             
     public boolean createComentarios(Comentarios comment){
                             try{
                                 String sql = "insert into comentarios (autor, comentario, id_lugar) values(?, ? ,?)";
@@ -122,12 +115,8 @@ public class DAOComentario {
     
     
     public void close(){
-        try {
-            conn.close();
+            ConnectionFactory.closeConnection();
             daoLugar.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOComentario.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
         private Comentarios resultSetToComentario(ResultSet result) {
