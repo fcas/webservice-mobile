@@ -20,20 +20,13 @@ import model.Usuario;
  * @author augusto
  */
 public class DAOLugar {
-              Connection conn;  
+          static Connection conn;  
 	  private static DAOLugar instance;
 	  @SuppressWarnings("unused")
-	  private DAOLugar() {
-	      conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
+	  public DAOLugar() {
+	     conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
 	  }
-               
-          public static DAOLugar getInstance(){
-            if(instance == null){
-                instance = new DAOLugar();
-            }
-            return instance;
-          }
-          
+                         
          public List<String> listarLugares() {
             List<String> labels = new ArrayList<String>();
             List<Usuario> usuarios = new ArrayList<Usuario>();
@@ -107,10 +100,7 @@ public class DAOLugar {
          }
           
           public void close(){
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(DAOUsuario.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    ConnectionFactory.closeConnection();
+
           }          
 }

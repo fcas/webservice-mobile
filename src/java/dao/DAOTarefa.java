@@ -20,21 +20,14 @@ import model.Usuario;
  * @author augusto
  */
 public class DAOTarefa {
-    Connection conn;  
+    private static Connection conn;  
     private static DAOTarefa instance;
     private DAOLugar daoLugar;
-    	  private DAOTarefa() {
+    	  public DAOTarefa() {
 	      conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
-              daoLugar = DAOLugar.getInstance();
+              daoLugar = new DAOLugar();
 	  }
-               
-          public static DAOTarefa getInstance(){
-            if(instance == null){
-                instance = new DAOTarefa();
-            }
-            return instance;
-          }
-
+              
      public void createTarefa(Tarefas tarefa){
                             try{
                                 String sql = "insert into tarefas (usuario, id_lugar, data, horario, descricao) values(?, ? ,?, ?, ?)";
@@ -169,12 +162,8 @@ public class DAOTarefa {
 	  }
           
           public void close(){
-                try {
-                    conn.close();
+                    ConnectionFactory.closeConnection();
                     daoLugar.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(DAOUsuario.class.getName()).log(Level.SEVERE, null, ex);
-                }
           }
 
     private Tarefas resultSetToTarefa(ResultSet result) {

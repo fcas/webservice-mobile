@@ -20,12 +20,13 @@ import org.codehaus.jettison.json.JSONObject;
 @Path("usuario")  
 public class RecursoUsuario {  
     
-    DAOUsuario dao;
+    static DAOUsuario dao;
     public RecursoUsuario(){
-        
+        dao = new DAOUsuario();
+        dao.open();
     }
     
-   @GET  
+  /* @GET  
    @Produces(MediaType.TEXT_PLAIN)
    @Path("getAll")  
    public String getAll() {   
@@ -57,20 +58,22 @@ public class RecursoUsuario {
            string.append(usuario.getCurso());
            string.append("--");
            string.append(usuario.getSobreMim());    
-           string.append(System.getProperty("line.separator"));*/
+           string.append(System.getProperty("line.separator"));
        }
        //dao.close();
        return jsonarr.toString();
-    }  
+    }*/
    
    @GET  
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("getAll2")  
-   public List<Usuario> getAll2() {   
-       dao = DAOUsuario.getInstance();
+   @Path("getAll")  
+   public List<Usuario> getAll() {   
+       //dao = new DAOUsuario();
+       //dao.open();
        Usuario usuario;
        StringBuilder string = new StringBuilder();
        List<Usuario> lista = dao.getAllUsers();
+       dao.close();
        return lista;
     }  
    
@@ -79,7 +82,7 @@ public class RecursoUsuario {
    @Produces("text/plain")
    @Path("createUsuario")  
    public String createUsuario(Usuario usuario) {   
-       dao = DAOUsuario.getInstance();
+      
         try {
             dao.createUsuario(usuario);
             return "usuario adicionado";
