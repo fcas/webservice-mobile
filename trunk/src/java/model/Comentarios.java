@@ -1,12 +1,15 @@
 package model;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 //import java.util.ArrayList;
 //import java.util.List;
 
 //import android.database.Cursor;
-
+@XmlRootElement 
+@JsonIgnoreProperties
 public class Comentarios implements Serializable {
 
 	private static final long serialVersionUID = 9179267868462004746L;
@@ -33,12 +36,12 @@ public class Comentarios implements Serializable {
 		this.id = id;
 	}
 
-	public String getComment() {
+	public String getComentario() {
 		return comentario;
 	}
 
-	public void setComment(String comment) {
-		this.comentario = comment;
+	public void setComentario(String comentario) {
+		this.comentario = comentario;
 	}
 
 	public String getAutor() {

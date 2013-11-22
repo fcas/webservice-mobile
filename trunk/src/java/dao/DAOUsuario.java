@@ -1,5 +1,6 @@
 package dao;
 
+import com.mysql.jdbc.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import excecoes.*;
@@ -28,7 +29,7 @@ public class DAOUsuario {
         
                 PreparedStatement ps = conn.prepareStatement("select * from usuario");
                 rs = ps.executeQuery();
-                
+               
                 while (rs.next()) {
                     Usuario usuario = resultSetToUsuario(rs);
                     usuarios.add(usuario);
@@ -91,23 +92,29 @@ public class DAOUsuario {
 		return user;
 	  }
 	      
-	  public Usuario createUsuario(Usuario usuario) throws DadosIncompletosException, UsuarioJaExisteException {
+	  public String createUsuario(Usuario usuario) throws DadosIncompletosException, UsuarioJaExisteException {
+              String result = "";
               if(!usuario.getNome().equals("") && !usuario.getSenha().trim().equals("") && !usuario.getLogin().trim().equals("")){            
                   if(getUsuarioByLogin(usuario.getLogin()) == null){
                             try{
                                 String sql = "insert into usuario ("+Usuario.COLUNA_LOGIN+","+Usuario.COLUNA_SENHA+","+Usuario.COLUNA_NOME+","+Usuario.COLUNA_CURSO+", "+Usuario.COLUNA_SOBRE+") values(?, ? ,?, ?, ?)";
-                                PreparedStatement stmt = conn.prepareStatement(sql); 
+                                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
                                 stmt.setString(1, usuario.getLogin());
                                 stmt.setString(2, usuario.getSenha());
                                 stmt.setString(3, usuario.getNome());
                                 stmt.setString(4, usuario.getCurso());
                                 stmt.setString(5 , usuario.getSobreMim());
                                 stmt.execute();
+                                ResultSet rs = stmt.getGeneratedKeys();
+                                if(rs.next()){
+                                    result = rs.getString(1);
+                                }
+                                                
                                 stmt.close();
-                               
+                                       
                             }catch(SQLException e){
                                 e.printStackTrace();
-                                return null;
+                                result = "";
                             }
 			}
 		    else{
@@ -116,49 +123,43 @@ public class DAOUsuario {
 		  }else{
 			  throw new DadosIncompletosException();
 		  }
-		  return usuario;
+		  return result;
 	  }
 	  
-            public Usuario updateUsuario(String login, Usuario usuario) throws DadosIncompletosException, UsuarioJaExisteException {
-              if(!usuario.getNome().equals("") && !usuario.getSenha().trim().equals("") && !usuario.getLogin().trim().equals("")){
-		    if(getUsuarioByLogin(usuario.getLogin()) == null){
-                            try{
-                                String sql = "update usuario set "+Usuario.COLUNA_LOGIN+" = ?, "+Usuario.COLUNA_SENHA+" = ?, "+Usuario.COLUNA_NOME+" = ?, "+Usuario.COLUNA_CURSO+" = ?, "+Usuario.COLUNA_SOBRE+" = ? where login = '"+login+"'";
-                                PreparedStatement stmt = conn.prepareStatement(sql); 
-                                stmt.setString(1, usuario.getLogin());
-                                stmt.setString(2, usuario.getSenha());
-                                stmt.setString(3, usuario.getNome());
-                                stmt.setString(4, usuario.getCurso());
-                                stmt.setString(5 , usuario.getSobreMim());
-                                stmt.executeUpdate();
-                                System.out.println("lol");
-                                stmt.close();
-                            }catch(SQLException e){
-                                e.printStackTrace();
-                                return null;
-                            }
-			}
-		    else{
-		    	throw new UsuarioJaExisteException();
-		    }
-		  }else{
-			  throw new DadosIncompletosException();
-		  }
-		  return usuario;
-	  }
+          public String updateUsuario(Usuario usuario) {
+          String login = "";
+          try{
+          String sql = "update usuario set "+Usuario.COLUNA_LOGIN+" = ?, "+Usuario.COLUNA_SENHA+" = ?, "+Usuario.COLUNA_NOME+" = ?, "+Usuario.COLUNA_CURSO+" = ?, "+Usuario.COLUNA_SOBRE+" = ? where login = '"+usuario.getLogin()+"'";
+              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
+              stmt.setString(1, usuario.getLogin());
+              stmt.setString(2, usuario.getSenha());
+              stmt.setString(3, usuario.getNome());
+              stmt.setString(4, usuario.getCurso());
+              stmt.setString(5 , usuario.getSobreMim());
+              stmt.setString(5 , usuario.getLogin());
+              stmt.executeUpdate();
+              ResultSet rs = stmt.getGeneratedKeys();
+                if(rs.next()){
+                    login = rs.getString(1);
+                 }  
+                 stmt.close();
+                                
+              }catch(SQLException e){
+                e.printStackTrace();
+                                
+              }
+                return login;
+                        }
+
 	  
-	  public void deleteUsuarios(Usuario usuario) {
+	  public void deleteUsuario(String login) {
             try {
-                String login = usuario.getLogin();
-                String sql = "delete from usuario where login=?";
-                PreparedStatement stmt = conn.prepareStatement(sql); 
-                stmt.setString(1, usuario.getLogin());
-                System.out.println("Usuario deleted with login: " + login);
-                stmt.execute();
-                stmt.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DAOUsuario.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                    PreparedStatement ps = conn.prepareStatement("delete from usuario where login = ?", Statement.RETURN_GENERATED_KEYS);
+                    ps.setString(1, login);
+                    ps.execute();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DAOUsuario.class.getName()).log(Level.SEVERE, null, ex);
+                }
 	  }
           
 	  private Usuario resultSetToUsuario(ResultSet result) {

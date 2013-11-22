@@ -4,6 +4,7 @@
  */
 package dao;
 
+import com.mysql.jdbc.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,56 +29,59 @@ public class DAOTarefa {
               daoLugar = new DAOLugar();
 	  }
               
-     public void createTarefa(Tarefas tarefa){
-                            try{
-                                String sql = "insert into tarefas (usuario, id_lugar, data, horario, descricao) values(?, ? ,?, ?, ?)";
-                                PreparedStatement stmt = conn.prepareStatement(sql); 
-                                stmt.setString(1, tarefa.getUsuario());
-                                stmt.setInt(2, tarefa.getLugar().getId_local());
-                                stmt.setString(3, DataCalculos.visaoToBanco(tarefa.getData()));
-                                stmt.setString(4, tarefa.getHorario());
-                                stmt.setString(5 ,tarefa.getDescricao());
-                                stmt.execute();
-                                stmt.close();
-                            }catch(SQLException e){
-                                e.printStackTrace();
-                            }
+     public int createTarefa(Tarefas tarefa){
+         int idTarefa = 0;
+              try{
+                   String sql = "insert into tarefas (usuario, id_lugar, data, horario, descricao) values(?, ? ,?, ?, ?)";
+                   PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
+                   stmt.setString(1, tarefa.getUsuario());
+                   stmt.setInt(2, tarefa.getLugar().getId_local());
+                   stmt.setString(3, DataCalculos.visaoToBanco(tarefa.getData()));
+                   stmt.setString(4, tarefa.getHorario());
+                   stmt.setString(5 ,tarefa.getDescricao());
+                   stmt.execute();
+                   ResultSet rs = stmt.getGeneratedKeys();
+                                if(rs.next()){
+                                    idTarefa = rs.getInt(1);
+                                } 
+                   stmt.close();
+                   }catch(SQLException e){
+                        e.printStackTrace();
+                   }
+                   return idTarefa;
      }
      
-     public boolean updateTarefa(Tarefas tarefa){
+     public int updateTarefa(Tarefas tarefa){
+         int idtarefa = 0;
         try {
-            String sql = "update tarefas set usuario = ?, id_lugar = ?, data = ?, horario = ?, descricao = ? where id_tarefa = "+tarefa.getId();
-            PreparedStatement stmt = conn.prepareStatement(sql); 
+            String sql = "update tarefas set usuario = ?, id_lugar = ?, data = ?, horario = ?, descricao = ? where id_tarefa = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
             stmt.setString(1, tarefa.getUsuario());
             stmt.setInt(2, tarefa.getLugar().getId_local());
             stmt.setString(3, DataCalculos.visaoToBanco(tarefa.getData()));
             stmt.setString(4, tarefa.getHorario());
             stmt.setString(5 , tarefa.getDescricao());
+            stmt.setLong(6 , tarefa.getId());
             stmt.executeUpdate();
-            System.out.println("lol");
+            ResultSet rs = stmt.getGeneratedKeys();
+                if(rs.next()){
+                    idtarefa = rs.getInt(1);
+                }      
             stmt.close();
-            return true;
         } catch (SQLException ex) {
             Logger.getLogger(DAOTarefa.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
+        return idtarefa;
      }
-     public boolean deleteTarefa(Tarefas tarefa){
-        try {
-            long id = tarefa.getId();
-            
-                   String sql = "delete from tarefas where id_tarefa=?";
-                   PreparedStatement stmt = conn.prepareStatement(sql); 
-                   stmt.setLong(1, id);
-                   System.out.println("Tarefa deletada with id: " + id);
-                   stmt.execute();
-                   stmt.close();
-                   return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(DAOTarefa.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-     }
+  	  public void deleteTarefa(int id) {
+            try {
+                    PreparedStatement ps = conn.prepareStatement("delete from tarefas where id_tarefa = ?", Statement.RETURN_GENERATED_KEYS);
+                    ps.setInt(1, id);
+                    ps.execute();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DAOTarefa.class.getName()).log(Level.SEVERE, null, ex);
+                }
+	  }
      
      public List<Tarefas> getFutureTasksByUser(String userLogin){
           List<Tarefas> tarefas = new ArrayList<Tarefas>();

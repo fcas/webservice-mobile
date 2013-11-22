@@ -4,6 +4,9 @@
  */
 package dao;
 
+import com.mysql.jdbc.Statement;
+import excecoes.DadosIncompletosException;
+import excecoes.UsuarioJaExisteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,19 +91,55 @@ public class DAOLugar {
                 return lugar;
          }
           
-         public void salvarLugar(String lugar){
-            try {
+         public int salvarLugar(String lugar){
+            int idlugar = 0;
+             try {
                 String sql = "insert into lugar (nome) values(?)";
-                PreparedStatement stmt = conn.prepareStatement(sql);       
+                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);       
                 stmt.setString(1, lugar);
                 stmt.execute();
+                ResultSet rs = stmt.getGeneratedKeys();
+                                if(rs.next()){
+                                    idlugar = rs.getInt(1);
+                                } 
+                stmt.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DAOLugar.class.getName()).log(Level.SEVERE, null, ex);
+                 System.out.println("SQL EXCEPTION!!!!!NAO PODE SALVAR "+lugar);
             }
+             return idlugar;
          }
           
           public void close(){
                     ConnectionFactory.closeConnection();
 
-          }          
+          }
+
+    public void deleteLugar(int id_local) {
+       try {
+            PreparedStatement ps = conn.prepareStatement("delete from lugar where id_lugar = ?", Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, id_local);
+            ps.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOLugar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public int updateLugar(Lugar lugar) {
+        int idlugar = 0;
+        try {
+            String sql = "update lugar set nome = ? where id_lugar = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
+            stmt.setString(1, lugar.getNome());
+            stmt.setInt(2, lugar.getId_local());
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+                if(rs.next()){
+                    idlugar = rs.getInt(1);
+                }             
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOLugar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return idlugar;
+    }
+    
 }

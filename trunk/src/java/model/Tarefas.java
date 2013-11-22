@@ -1,30 +1,20 @@
 package model;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
-
+@XmlRootElement 
 public class Tarefas implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-
 	private long id;
 	private String usuario;
-	@SuppressWarnings("unused")
-	private String local;
 	private String data;
 	private String horario;
 	private String descricao;
 	private Lugar lugar;
-	@SuppressWarnings("unused")
-	private int idLugar;
-	public static final String TABELA_TAREFA = "Tarefa";
-	public static final String COLUNA_USUARIO = "Usuario";
-	public static final String COLUNA_ID_LUGAR = "IDLocal";
-	public static final String COLUNA_DATA = "Data";
-	public static final String COLUNA_HORARIO = "Horario";
-	public static final String COLUNA_DESCRICAO = "Descricao";
-	
+
 	
 	public Lugar getLugar() {
 		return lugar;
@@ -72,6 +62,4 @@ public class Tarefas implements Serializable {
 	public void setId(long id) {
 		this.id = id;
 	}
-
-
 }

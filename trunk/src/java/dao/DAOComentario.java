@@ -4,6 +4,7 @@
  */
 package dao;
 
+import com.mysql.jdbc.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,25 +32,58 @@ public class DAOComentario {
 	      conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
 	  }
                              
-    public boolean createComentarios(Comentarios comment){
-                            try{
-                                String sql = "insert into comentarios (autor, comentario, id_lugar) values(?, ? ,?)";
-                                PreparedStatement stmt = conn.prepareStatement(sql); 
-                                stmt.setString(1, comment.getAutor());
-                                stmt.setString(2, comment.getComment());
-                                stmt.setInt(3, comment.getLugar().getId_local());
-                                stmt.execute();
-                                stmt.close();
-                                return true;
-                            }catch(SQLException e){
-                                e.printStackTrace();
-                                return false;
-                            }        
+    public int createComentarios(Comentarios comment){
+        int idcomentario = 0;
+            try{
+                String sql = "insert into comentarios (autor, comentario, id_lugar) values(?, ? ,?)";
+                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
+                stmt.setString(1, comment.getAutor());
+                stmt.setString(2, comment.getComentario());
+                stmt.setInt(3, comment.getLugar().getId_local());
+                
+                stmt.execute();
+                
+                ResultSet rs = stmt.getGeneratedKeys();
+                                if(rs.next()){
+                                    idcomentario = rs.getInt(1);
+                                } 
+                stmt.close();
+                    }catch(SQLException e){
+                    e.printStackTrace();
+                    }     
+                return idcomentario;
     }
     
-    public void deleteComentarios(Comentarios comment) {
-        
+    public void deleteComentarios(int id) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("delete from comentarios where id_comentario = ?", Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, id);
+            ps.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOComentario.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    
+     public int updateComentario(Comentarios comentario){
+        int idcomentario = 0;
+        try {
+            String sql = "update comentarios set autor = ?, id_lugar = ?, comentario = ?, id_lugar = ? where id_comentario = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
+            stmt.setString(1, comentario.getAutor());
+            stmt.setLong(2, comentario.getId());
+            stmt.setString(3, comentario.getComentario());
+            stmt.setInt(4, comentario.getLugar().getId_local());
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+                if(rs.next()){
+                    idcomentario = rs.getInt(1);
+                }      
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOTarefa.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return idcomentario;
+     }    
     
     public List<Comentarios> getAllComments() {
             List<Comentarios> comentarios = new ArrayList<Comentarios>();
@@ -96,24 +130,6 @@ public class DAOComentario {
                 return comentarios;          
     }
     
-    public boolean updateComentario(Comentarios comentario){
-                    try{
-                                String sql = "update comentarios set autor = ?, comentario = ?, id_lugar = ? where id_comentario = "+comentario.getId();
-                                PreparedStatement stmt = conn.prepareStatement(sql); 
-                                stmt.setString(1, comentario.getAutor());
-                                stmt.setString(2, comentario.getComment());
-                                stmt.setInt(3, comentario.getLugar().getId_local());
-                                stmt.executeUpdate();
-                                System.out.println("lol");
-                                stmt.close();
-                                return true;
-                            }catch(SQLException e){
-                                e.printStackTrace();
-                                return false;
-                            }        
-    }
-    
-    
     public void close(){
             ConnectionFactory.closeConnection();
             daoLugar.close();
@@ -124,7 +140,7 @@ public class DAOComentario {
             try{
                 comentario.setId(result.getLong(1));
                 comentario.setAutor(result.getString(2));
-                comentario.setComment(result.getString(3));
+                comentario.setComentario(result.getString(3));
                 comentario.setLugar(daoLugar.getLugarById(result.getInt(4)));
             }catch(SQLException e){
                 return null;
