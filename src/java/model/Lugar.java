@@ -3,8 +3,9 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
-
+@XmlRootElement 
 @SuppressWarnings("serial")
 public class Lugar implements Serializable{
 	private String nome;
