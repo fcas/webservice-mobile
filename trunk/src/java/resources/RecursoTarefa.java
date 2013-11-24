@@ -1,3 +1,5 @@
+package resources;
+
 
 import dao.DAOTarefa;
 import dao.DAOUsuario;
@@ -64,6 +66,48 @@ public class RecursoTarefa {
        List<Tarefas> result = dao.getFutureTasksByUser(usuario);
        dao.close();
        return result;
+    }  
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("createTarefa")  
+   public String createTarefa(Tarefas tarefa) {   
+       System.out.println("Recebendo WS criando tarefa");
+       String id; 
+       try {
+            id = String.valueOf(dao.createTarefa(tarefa)); 
+        }finally{
+            dao.close();
+        }
+       return id;
+    }  
+   
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.TEXT_PLAIN)
+   @Path("updateTarefa")  
+   public String updateTarefa(Tarefas tarefa) {   
+       System.out.println("Recebendo WS updando Tarefa");
+       String id; 
+       try {
+            id = String.valueOf(dao.updateTarefa(tarefa)); 
+        }finally{
+            dao.close();
+        }
+       return id;
+    }  
+   
+   @DELETE
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/deleteTarefa/{id_tarefa}")
+   public void deleteTarefa(@PathParam("id_tarefa") int id_tarefa) {   
+       System.out.println("Recebendo WS Deletando Tarefa");
+       try {
+           dao.deleteTarefa(id_tarefa);
+        }finally{
+            dao.close();
+        }
     }  
 }
 
