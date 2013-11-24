@@ -68,12 +68,13 @@ public class DAOComentario {
      public int updateComentario(Comentarios comentario){
         int idcomentario = 0;
         try {
-            String sql = "update comentarios set autor = ?, id_lugar = ?, comentario = ?, id_lugar = ? where id_comentario = ?";
+            System.out.println("ID COMENTAIRO: "+comentario.getId());
+            String sql = "update comentarios set autor = ?, comentario = ?, id_lugar = ? where id_comentario = ?";
             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
             stmt.setString(1, comentario.getAutor());
-            stmt.setLong(2, comentario.getId());
-            stmt.setString(3, comentario.getComentario());
-            stmt.setInt(4, comentario.getLugar().getId_local());
+            stmt.setString(2, comentario.getComentario());
+            stmt.setInt(3, comentario.getLugar().getId_local());
+            stmt.setLong(4, comentario.getId());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
                 if(rs.next()){
