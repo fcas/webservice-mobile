@@ -129,15 +129,15 @@ public class DAOUsuario {
           public String updateUsuario(Usuario usuario) {
           String login = "";
           try{
-          String sql = "update usuario set "+Usuario.COLUNA_LOGIN+" = ?, "+Usuario.COLUNA_SENHA+" = ?, "+Usuario.COLUNA_NOME+" = ?, "+Usuario.COLUNA_CURSO+" = ?, "+Usuario.COLUNA_SOBRE+" = ? where login = '"+usuario.getLogin()+"'";
+          String sql = "update usuario set senha = ?, nome = ?, curso = ?, sobre = ? where login = ?";
               PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
-              stmt.setString(1, usuario.getLogin());
-              stmt.setString(2, usuario.getSenha());
-              stmt.setString(3, usuario.getNome());
-              stmt.setString(4, usuario.getCurso());
-              stmt.setString(5 , usuario.getSobreMim());
+              stmt.setString(1, usuario.getSenha());
+              stmt.setString(2, usuario.getNome());
+              stmt.setString(3, usuario.getCurso());
+              stmt.setString(4 , usuario.getSobreMim());
               stmt.setString(5 , usuario.getLogin());
               stmt.executeUpdate();
+              System.out.println("Update executado.. Login = "+usuario.getLogin());
               ResultSet rs = stmt.getGeneratedKeys();
                 if(rs.next()){
                     login = rs.getString(1);
@@ -148,8 +148,8 @@ public class DAOUsuario {
                 e.printStackTrace();
                                 
               }
-                return login;
-                        }
+              return login;
+          }
 
 	  
 	  public void deleteUsuario(String login) {

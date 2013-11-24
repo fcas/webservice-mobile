@@ -30,8 +30,8 @@ public class DAOLugar {
 	     conn = ConnectionFactory.getConnection(ConnectionFactory.MYSQL);
 	  }
                          
-         public List<String> listarLugares() {
-            List<String> labels = new ArrayList<String>();
+         public List<Lugar> listarLugares() {
+            List<Lugar> lugares = new ArrayList<Lugar>();
             List<Usuario> usuarios = new ArrayList<Usuario>();
             ResultSet rs;
             try {
@@ -39,7 +39,10 @@ public class DAOLugar {
                 PreparedStatement ps = conn.prepareStatement("select * from lugar");
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    labels.add(rs.getString(2));
+                    Lugar l = new Lugar();
+                    l.setId_local(rs.getInt(1));
+                    l.setNome(rs.getString(2));
+                    lugares.add(l);
                 }
                 ps.close();
                 
@@ -47,7 +50,7 @@ public class DAOLugar {
                     e.printStackTrace();
                     return null;
                 }
-                return labels;
+                return lugares;
 	  }
          
          public int idLugar(String lugar){

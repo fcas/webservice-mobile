@@ -35,6 +35,7 @@ public class DAOComentario {
     public int createComentarios(Comentarios comment){
         int idcomentario = 0;
             try{
+                System.out.println(comment.getAutor()+ "-"+comment.getComentario()+"-"+comment.getLugar().getId_local());
                 String sql = "insert into comentarios (autor, comentario, id_lugar) values(?, ? ,?)";
                 PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
                 stmt.setString(1, comment.getAutor());
