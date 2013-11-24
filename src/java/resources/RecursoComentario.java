@@ -52,11 +52,11 @@ public class RecursoComentario {
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.TEXT_PLAIN)
    @Path("createComentario")  
-   public String createComentario(Comentarios comentario) {   
+   public int createComentario(Comentarios comentario) {   
        System.out.println("Recebendo WS criando Comentario");
-       String id; 
+       int id; 
        try {
-            id = String.valueOf(dao.createComentarios(comentario)); 
+            id = dao.createComentarios(comentario); 
         }finally{
             dao.close();
         }
