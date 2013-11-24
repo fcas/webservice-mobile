@@ -30,7 +30,7 @@ public class Usuario implements Serializable {
 	+COLUNA_SOBRE +" TEXT);";
 
 	public Usuario() {
-	}
+	}   
 
 	public String getNome() {
 		return nome;
