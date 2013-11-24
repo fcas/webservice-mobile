@@ -1,3 +1,5 @@
+package resources;
+
 
 import javax.ws.rs.*;
 
