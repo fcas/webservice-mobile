@@ -43,7 +43,6 @@ public class DAOComentario {
                 stmt.setInt(3, comment.getLugar().getId_local());
                 
                 stmt.execute();
-                
                 ResultSet rs = stmt.getGeneratedKeys();
                                 if(rs.next()){
                                     idcomentario = rs.getInt(1);
